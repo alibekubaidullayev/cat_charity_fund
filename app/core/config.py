@@ -7,8 +7,8 @@ class Settings(BaseSettings):
     app_title: str = "Благотворительный фонд поддержки котов"
     database_url: str
     secret: str = "secret"
-    first_superuser_email: Optional[EmailStr] = None
-    first_superuser_password: Optional[str] = None
+    first_superuser_email: Optional[EmailStr] = "alibek@gmail.com"
+    first_superuser_password: Optional[str] = "12345678aA"
 
     class Config:
         env_file = ".env"
