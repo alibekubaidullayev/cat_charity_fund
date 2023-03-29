@@ -7,14 +7,13 @@ from app.schemas.donation import (
     DonationDB,
     DonationCreate,
 )
-from app.core.user import current_superuser
 
 router = APIRouter()
 
 
 @router.get("/", response_model=list[DonationDB], response_model_exclude_none=True)
 async def get_all_donations(session: AsyncSession = Depends(get_async_session)):
-    all_projects = await charity_project_crud.get_multi(session)
+    all_projects = await donation_crud.get_multi(session)
     return all_projects
 
 
@@ -33,5 +32,5 @@ async def create_new_donation(
     donation: DonationCreate,
     session: AsyncSession = Depends(get_async_session),
 ):
-    new_donation = await charity_project_crud.create(donation, session)
+    new_donation = await donation_crud.create(donation, session)
     return new_donation

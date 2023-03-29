@@ -1,9 +1,7 @@
 from sqlalchemy import Boolean, Column, DateTime, Integer
 
-from app.core.db import Base
 
-
-class QRKoTModel(Base):
+class QRKoTModel:
     full_amount = Column(Integer)
     invested_amount = Column(Integer)
     fully_invested = Column(Boolean)

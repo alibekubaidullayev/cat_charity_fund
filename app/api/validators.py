@@ -9,11 +9,11 @@ async def check_name_duplicate(
     project_name: str,
     session: AsyncSession,
 ) -> None:
-    room_id = await charity_project_crud.get_project_id_by_name(project_name, session)
-    if room_id is not None:
+    project_id = await charity_project_crud.get_project_id_by_name(project_name, session)
+    if project_id is not None:
         raise HTTPException(
-            status_code=422,
-            detail="Переговорка с таким именем уже существует!",
+            status_code=400,
+            detail="Проект с таким названием уже существует!",
         )
 
 

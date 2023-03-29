@@ -5,15 +5,17 @@ from fastapi_users import schemas
 
 
 class UserRead(schemas.BaseUser[int]):
-    first_name: str
-    birthdate: Optional[datetime.date]
+    pass
 
 
 class UserCreate(schemas.BaseUserCreate):
-    first_name: str
-    birthdate: Optional[datetime.date]
+    email: str
+    password: str
 
 
 class UserUpdate(schemas.BaseUserUpdate):
-    first_name: Optional[str]
-    birthdate: Optional[datetime.date]
+    password: Optional[str] = None
+    email: Optional[str] = None
+    is_active: Optional[bool] = None
+    is_superuser: Optional[bool] = None
+    is_verified: Optional[bool] = None

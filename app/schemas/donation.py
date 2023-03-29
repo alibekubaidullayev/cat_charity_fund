@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from pydantic import BaseModel, Field, PositiveInt
+from pydantic import BaseModel, Field, PositiveInt, root_validator
 
 
 FROM_TIME = (datetime.now() + timedelta(minutes=10)).isoformat(timespec="minutes")
@@ -17,6 +17,12 @@ class DonationBase(BaseModel):
 class DonationCreate(DonationBase):
     comment: str
     full_amount: PositiveInt
+
+    @root_validator(skip_on_failure=True)
+    def check_full_amount_no_less_than_invested(cls, values):
+        if values["full_amount"] < values["invested_amount"]:
+            raise ValueError("Полная сумма не может быть меньше уже имеющейся!")
+        return values
 
 
 class DonationDB(DonationCreate):

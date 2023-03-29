@@ -5,12 +5,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.crud.base import CRUDBase
 from app.models.charity_project import CharityProject
-from app.schemas.charity_project import CharityProjectCreate, CharityProjectUpdate
 
 
-class CRUDCharityProject(
-    CRUDBase[CharityProject, CharityProjectCreate, CharityProjectUpdate]
-):
+class CRUDCharityProject(CRUDBase):
     async def get_project_id_by_name(
         self,
         project_name: str,
