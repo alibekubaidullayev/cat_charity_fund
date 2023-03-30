@@ -18,5 +18,13 @@ class CRUDDonation(CRUDBase):
         )
         return db_project_id.scalars().first()
 
+    async def get_uninvested_donations(self, session: AsyncSession) -> list[Donation]:
+        uninvested_donations = await session.execute(
+            select(Donation)
+            .where(Donation.fully_invested == False)
+            .order_by(Donation.create_date)
+        )
+        return uninvested_donations.scalars().first()
+
 
 donation_crud = CRUDDonation(Donation)

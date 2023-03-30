@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from typing import Optional
 from datetime import datetime, timedelta
 
@@ -11,19 +12,30 @@ TO_TIME = (datetime.now() + timedelta(hours=1)).isoformat(timespec="minutes")
 class CharityProjectBase(BaseModel):
     name: str = Field(..., min_length=1, max_length=100)
     description: str
-    invested_amount: int = Field(default=0)
-    fully_invested: bool = Field(default=False)
+    invested_amount: Optional[int]
+    fully_invested: Optional[bool]
+    create_date: Optional[datetime] = datetime.now()
+    close_date: Optional[datetime] = None
+
+    @root_validator
+    def defaults(cls, values):
+        if values.get("invested_amount") is None:
+            values["invested_amount"] = 0
+        if values.get("fully_invested") is None:
+            values["fully_invested"] = False
+        return values
 
 
 class CharityProjectCreate(CharityProjectBase):
     full_amount: PositiveInt
-    create_date: datetime = datetime.now()
-    close_date: Optional[datetime] = None
 
     @validator("description")
     def non_empty_description(cls, value):
         if not value:
-            raise ValueError("Описание не может быть пустым")
+            raise HTTPException(
+                status_code=422,
+                detail="Описание не может быть пустым",
+            )
         return value
 
 
@@ -35,15 +47,12 @@ class CharityProjectDB(CharityProjectCreate):
 
 
 class CharityProjectUpdate(CharityProjectBase):
-    name: Optional[str] = Field(None, min_length=1, max_length=100)
+    name: Optional[str]
     description: Optional[str]
     full_amount: Optional[PositiveInt]
 
-    @root_validator(skip_on_failure=True)
-    def check_full_amount_no_less_than_invested(cls, values):
-        if (
-            values["full_amount"] is not None
-            and values["full_amount"] < values["invested_amount"]
-        ):
-            raise ValueError("Полная сумма не может быть меньше уже имеющейся!")
-        return values
+    @root_validator()
+    def non_empty(cls, values):
+        for key in values:
+            if key == "":
+                raise ValueError(f"{key} не  может быть пустым!")

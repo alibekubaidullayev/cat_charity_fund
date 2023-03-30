@@ -8,7 +8,13 @@ from app.schemas.charity_project import (
     CharityProjectCreate,
     CharityProjectUpdate,
 )
-from app.api.validators import check_charity_project_exists, check_name_duplicate
+from app.api.validators import (
+    check_charity_project_exists,
+    check_name_duplicate,
+    check_update_is_possible,
+    check_delete_is_possible,
+    check_fully_no_less_invested,
+)
 from app.core.user import current_superuser
 
 router = APIRouter()
@@ -40,7 +46,6 @@ async def create_new_charity_project(
 @router.delete(
     "/{charity_project_id}",
     response_model=CharityProjectDB,
-    response_model_exclude_none=True,
     dependencies=[Depends(current_superuser)],
 )
 async def remove_charity_project(
@@ -48,6 +53,7 @@ async def remove_charity_project(
     session: AsyncSession = Depends(get_async_session),
 ):
     charity_project = await check_charity_project_exists(charity_project_id, session)
+    await check_delete_is_possible(charity_project_id, session)
     charity_project = await charity_project_crud.remove(charity_project, session)
     return charity_project
 
@@ -55,7 +61,6 @@ async def remove_charity_project(
 @router.patch(
     "/{charity_project_id}",
     response_model=CharityProjectDB,
-    response_model_exclude_none=True,
     dependencies=[Depends(current_superuser)],
 )
 async def partially_update_charity_project(
@@ -64,7 +69,8 @@ async def partially_update_charity_project(
     session: AsyncSession = Depends(get_async_session),
 ):
     charity_project = await check_charity_project_exists(charity_project_id, session)
-
+    await check_update_is_possible(charity_project_id, obj_in, session)
+    await check_fully_no_less_invested(charity_project_id, obj_in, session)
     if obj_in.name is not None:
         await check_name_duplicate(obj_in.name, session)
 
