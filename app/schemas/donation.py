@@ -1,7 +1,7 @@
 from typing import Optional
 from datetime import datetime, timedelta
 
-from pydantic import BaseModel, PositiveInt, NonNegativeInt
+from pydantic import BaseModel, PositiveInt, NonNegativeInt, root_validator
 
 
 FROM_TIME = (datetime.now() + timedelta(minutes=10)).isoformat(timespec="minutes")
@@ -30,6 +30,14 @@ class DonationRead(BaseModel):
     full_amount: PositiveInt
     create_date: Optional[datetime] = datetime.now()
     id: int
+
+    @root_validator
+    def defaults(cls, values):
+        if values.get("invested_amount") is None:
+            values["invested_amount"] = 0
+        if values.get("fully_invested") is None:
+            values["fully_invested"] = False
+        return values
 
     class Config:
         orm_mode = True

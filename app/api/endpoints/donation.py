@@ -33,6 +33,9 @@ async def create_new_donation(
 
 
 @router.get("/my", response_model=list[DonationDB], response_model_exclude_none=True)
-async def get_all_charity_projects(session: AsyncSession = Depends(get_async_session)):
+async def get_all_charity_projects(
+    session: AsyncSession = Depends(get_async_session),
+    user: User = Depends(current_user),
+):
     all_donations = await donation_crud.get_multi(session)
     return all_donations
