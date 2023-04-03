@@ -9,11 +9,19 @@ TO_TIME = (datetime.now() + timedelta(hours=1)).isoformat(timespec="minutes")
 
 
 class DonationCreate(BaseModel):
-    invested_amount: NonNegativeInt = 0
-    fully_invested: bool = False
-    create_date: Optional[datetime] = datetime.now()
-    comment: str
+    invested_amount: Optional[NonNegativeInt]
+    fully_invested: Optional[bool]
+    create_date: Optional[datetime]
+    comment: Optional[str]
     full_amount: PositiveInt
+
+    @root_validator
+    def defaults(cls, values):
+        if values.get("invested_amount") is None:
+            values["invested_amount"] = 0
+        if values.get("fully_invested") is None:
+            values["fully_invested"] = False
+        return values
 
 
 class DonationDB(DonationCreate):
@@ -26,18 +34,10 @@ class DonationDB(DonationCreate):
 
 
 class DonationRead(BaseModel):
-    comment: str
+    comment: Optional[str]
     full_amount: PositiveInt
-    create_date: Optional[datetime] = datetime.now()
+    create_date: Optional[datetime]
     id: int
-
-    @root_validator
-    def defaults(cls, values):
-        if values.get("invested_amount") is None:
-            values["invested_amount"] = 0
-        if values.get("fully_invested") is None:
-            values["fully_invested"] = False
-        return values
 
     class Config:
         orm_mode = True

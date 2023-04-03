@@ -1,4 +1,3 @@
-from fastapi import HTTPException
 from typing import Optional
 from datetime import datetime, timedelta
 
@@ -14,8 +13,8 @@ class CharityProjectBase(BaseModel):
     description: str
     invested_amount: Optional[int]
     fully_invested: Optional[bool]
-    create_date: Optional[datetime] = datetime.now()
-    close_date: Optional[datetime] = None
+    create_date: Optional[datetime]
+    close_date: Optional[datetime]
 
     @root_validator
     def defaults(cls, values):
@@ -32,10 +31,7 @@ class CharityProjectCreate(CharityProjectBase):
     @validator("description")
     def non_empty_description(cls, value):
         if not value:
-            raise HTTPException(
-                status_code=422,
-                detail="Описание не может быть пустым",
-            )
+            raise ValueError("Описание не может быть пустым")
         return value
 
 
@@ -51,8 +47,8 @@ class CharityProjectUpdate(CharityProjectBase):
     description: Optional[str]
     full_amount: Optional[PositiveInt]
 
-    @root_validator()
+    @root_validator
     def non_empty(cls, values):
-        for key in values:
-            if key == "":
-                raise ValueError(f"{key} не  может быть пустым!")
+        for key, value in values.items():
+            if value == "":
+                raise ValueError(f"{key} не  может быть пустым!!")

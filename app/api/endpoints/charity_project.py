@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.db import get_async_session
@@ -13,7 +13,6 @@ from app.api.validators import (
     check_name_duplicate,
     check_update_is_possible,
     check_delete_is_possible,
-    check_fully_no_less_invested,
 )
 from app.core.user import current_superuser
 
@@ -70,7 +69,7 @@ async def partially_update_charity_project(
 ):
     charity_project = await check_charity_project_exists(charity_project_id, session)
     await check_update_is_possible(charity_project_id, obj_in, session)
-    await check_fully_no_less_invested(charity_project_id, obj_in, session)
+
     if obj_in.name is not None:
         await check_name_duplicate(obj_in.name, session)
 
