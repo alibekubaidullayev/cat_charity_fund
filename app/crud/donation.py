@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.crud.base import CRUDBase
 from app.models.donation import Donation
+from app.models import User
 
 
 class CRUDDonation(CRUDBase):
@@ -24,7 +25,7 @@ class CRUDDonation(CRUDBase):
             .where(Donation.fully_invested == False)
             .order_by(Donation.create_date)
         )
-        return uninvested_donations.scalars().first()
+        return uninvested_donations.scalars().all()
 
 
 donation_crud = CRUDDonation(Donation)

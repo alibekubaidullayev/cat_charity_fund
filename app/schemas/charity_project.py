@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 
 from pydantic import BaseModel, Field, root_validator, PositiveInt, validator
 
-
 FROM_TIME = (datetime.now() + timedelta(minutes=10)).isoformat(timespec="minutes")
 TO_TIME = (datetime.now() + timedelta(hours=1)).isoformat(timespec="minutes")
 
@@ -42,7 +41,7 @@ class CharityProjectDB(CharityProjectCreate):
         orm_mode = True
 
 
-class CharityProjectUpdate(CharityProjectBase):
+class CharityProjectUpdate(BaseModel):
     name: Optional[str]
     description: Optional[str]
     full_amount: Optional[PositiveInt]
@@ -52,3 +51,18 @@ class CharityProjectUpdate(CharityProjectBase):
         for key, value in values.items():
             if value == "":
                 raise ValueError(f"{key} не  может быть пустым!!")
+        return values
+
+    class Config:
+        extra = "forbid"
+
+    # @root_validator(pre=True)
+    # def check_extra_fields(cls, values):
+    #     allowed_fields = {"name", "description", "full_amount"}
+    #     extra_fields = set(values.keys()) - allowed_fields
+    #     if extra_fields:
+    #         raise HTTPException(
+    #             status_code=422,
+    #             detail=f"Extra fields found in request: {', '.join(extra_fields)}",
+    #         )
+    #     return values

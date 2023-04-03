@@ -1,4 +1,3 @@
-from pydantic import Extra
 from sqlalchemy import Column, String, Text
 
 from app.core.db import Base
