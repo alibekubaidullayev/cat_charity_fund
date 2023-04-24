@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Optional
 
 from pydantic import BaseModel, Field, PositiveInt, root_validator, validator
@@ -11,14 +11,6 @@ class CharityProjectBase(BaseModel):
     fully_invested: Optional[bool]
     create_date: Optional[datetime]
     close_date: Optional[datetime]
-
-    @root_validator
-    def defaults(cls, values):
-        if values.get("invested_amount") is None:
-            values["invested_amount"] = 0
-        if values.get("fully_invested") is None:
-            values["fully_invested"] = False
-        return values
 
 
 class CharityProjectCreate(CharityProjectBase):

@@ -33,7 +33,7 @@ async def invest_in_project(project, donation, session: AsyncSession):
     available_amount = donation.full_amount - donation.invested_amount
 
     if available_amount == 0:
-        return
+        return project, donation
 
     if project.invested_amount + available_amount <= project.full_amount:
         project.invested_amount += available_amount
@@ -47,7 +47,12 @@ async def invest_in_project(project, donation, session: AsyncSession):
         project.invested_amount += donated_amount
         donation.invested_amount += donated_amount
 
+        if donation.invested_amount == donation.full_amount:
+            donation.fully_invested = True
+            donation.close_date = datetime.now()
+
     if project.invested_amount == project.full_amount:
+        print(type(project))
         project.fully_invested = True
         project.close_date = datetime.now()
 

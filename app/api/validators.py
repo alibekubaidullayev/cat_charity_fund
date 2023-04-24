@@ -44,7 +44,7 @@ async def check_update_is_possible(
         and charity_project.invested_amount
         and charity_project.invested_amount > new_full_amount
     ):
-        raise HTTPException(status_code=422, detail="Нельзя меньше ставить, сука!")
+        raise HTTPException(status_code=422, detail="Нельзя меньше ставить!")
 
 
 async def check_project_fully_invested(charity_project_id: int, session: AsyncSession):
@@ -77,4 +77,4 @@ async def check_fully_no_less_invested(
         and charity_project.invested_amount
         and charity_project.invested_amount > new_full_amount
     ):
-        raise HTTPException(status_code=422, detail="Нельзя меньше ставить, сука!")
+        raise HTTPException(status_code=422, detail="Нельзя меньше ставить!")
