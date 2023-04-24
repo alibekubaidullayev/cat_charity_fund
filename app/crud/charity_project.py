@@ -21,7 +21,7 @@ class CRUDCharityProject(CRUDBase):
     async def get_uninvested_charity_project(self, session: AsyncSession):
         uninvested_donations = await session.execute(
             select(CharityProject)
-            .where(CharityProject.fully_invested == False)
+            .where(CharityProject.fully_invested.isnot(True))
             .order_by(CharityProject.create_date)
         )
 

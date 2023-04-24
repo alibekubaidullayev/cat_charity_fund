@@ -40,9 +40,9 @@ async def check_update_is_possible(
         )
 
     if (
-        new_full_amount
-        and charity_project.invested_amount
-        and charity_project.invested_amount > new_full_amount
+        new_full_amount and
+        charity_project.invested_amount and
+        charity_project.invested_amount > new_full_amount
     ):
         raise HTTPException(status_code=422, detail="Нельзя меньше ставить!")
 
@@ -73,8 +73,8 @@ async def check_fully_no_less_invested(
     charity_project = await charity_project_crud.get(charity_project_id, session)
 
     if (
-        new_full_amount
-        and charity_project.invested_amount
-        and charity_project.invested_amount > new_full_amount
+        new_full_amount and
+        charity_project.invested_amount and
+        charity_project.invested_amount > new_full_amount
     ):
         raise HTTPException(status_code=422, detail="Нельзя меньше ставить!")
