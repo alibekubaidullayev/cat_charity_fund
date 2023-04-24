@@ -1,4 +1,4 @@
-from typing import Optional, Optional
+from typing import Optional
 
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
@@ -40,6 +40,7 @@ class CRUDBase:
         if user is not None:
             obj_in_data["user_id"] = user.id
         db_obj = self.model(**obj_in_data)
+
         session.add(db_obj)
         await session.commit()
         await session.refresh(db_obj)
@@ -57,6 +58,7 @@ class CRUDBase:
         for field in obj_data:
             if field in update_data:
                 setattr(db_obj, field, update_data[field])
+
         session.add(db_obj)
         await session.commit()
         await session.refresh(db_obj)

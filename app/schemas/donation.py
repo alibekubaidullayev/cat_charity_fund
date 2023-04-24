@@ -1,8 +1,7 @@
-from typing import Optional
 from datetime import datetime, timedelta
+from typing import Optional
 
-from pydantic import BaseModel, PositiveInt, NonNegativeInt, root_validator
-
+from pydantic import BaseModel, NonNegativeInt, PositiveInt, root_validator
 
 FROM_TIME = (datetime.now() + timedelta(minutes=10)).isoformat(timespec="minutes")
 TO_TIME = (datetime.now() + timedelta(hours=1)).isoformat(timespec="minutes")

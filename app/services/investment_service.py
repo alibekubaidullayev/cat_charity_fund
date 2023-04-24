@@ -1,41 +1,60 @@
-from app.crud import charity_project_crud, donation_crud
 from datetime import datetime
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import CharityProject, Donation
+from app.crud import charity_project_crud, donation_crud
 
 
-async def invest_in_projects(session: AsyncSession):
-    open_projects = await charity_project_crud.get_uninvested_charity_projects(session)
+async def invest_project(project, session: AsyncSession):
+    while not project.fully_invested:
+        donation = await donation_crud.get_uninvested_donation(session)
 
-    for project in open_projects:
-        remaining_amount = project.full_amount - project.invested_amount
-        free_donations = await donation_crud.get_uninvested_donations(session)
-        temp_project = CharityProject(**project.dict())
+        if not donation:
+            return project
 
-        for donation in free_donations:
-            if remaining_amount == 0:
-                break
+        modified_project, _ = await invest_in_project(project, donation, session)
 
-            temp_donation = Donation(**donation.dict())
-            if temp_donation.invested_amount < temp_donation.full_amount:
-                investment_amount = min(
-                    remaining_amount,
-                    temp_donation.full_amount - temp_donation.invested_amount,
-                )
-                temp_project.invested_amount += investment_amount
-                temp_donation.invested_amount += investment_amount
-                remaining_amount -= investment_amount
+    return modified_project
 
-                if temp_project.invested_amount == temp_project.full_amount:
-                    temp_project.fully_invested = True
-                    temp_project.close_date = datetime.utcnow()
 
-                if temp_donation.invested_amount == temp_donation.full_amount:
-                    temp_donation.fully_invested = True
+async def invest_donation(donation, session: AsyncSession):
+    while not donation.fully_invested:
+        project = await charity_project_crud.get_uninvested_charity_project(session)
 
-                await donation_crud.update(donation, temp_donation, session)
+        if not project:
+            return donation
 
-        await charity_project_crud.update(project, temp_project, session)
+        _, modified_donation = await invest_in_project(project, donation, session)
 
+    return modified_donation
+
+
+async def invest_in_project(project, donation, session: AsyncSession):
+    available_amount = donation.full_amount - donation.invested_amount
+
+    if available_amount == 0:
+        return
+
+    if project.invested_amount + available_amount <= project.full_amount:
+        project.invested_amount += available_amount
+        donation.invested_amount += available_amount
+        donation.fully_invested = True
+        donation.close_date = datetime.now()
+    else:
+        required_amount = project.full_amount - project.invested_amount
+        donated_amount = min(required_amount, available_amount)
+
+        project.invested_amount += donated_amount
+        donation.invested_amount += donated_amount
+
+    if project.invested_amount == project.full_amount:
+        project.fully_invested = True
+        project.close_date = datetime.now()
+
+    session.add(donation)
+    session.add(project)
     await session.commit()
+    await session.refresh(donation)
+    await session.refresh(project)
+
+    return project, donation

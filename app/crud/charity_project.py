@@ -1,8 +1,8 @@
 from typing import Optional
 
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi.encoders import jsonable_encoder
 
 from app.crud.base import CRUDBase
 from app.models.charity_project import CharityProject
@@ -21,14 +21,14 @@ class CRUDCharityProject(CRUDBase):
         )
         return db_project_id.scalars().first()
 
-    async def get_uninvested_charity_projects(self, session: AsyncSession):
+    async def get_uninvested_charity_project(self, session: AsyncSession):
         uninvested_donations = await session.execute(
             select(CharityProject)
             .where(CharityProject.fully_invested == False)
             .order_by(CharityProject.create_date)
         )
 
-        return uninvested_donations.scalars()
+        return uninvested_donations.scalars().first()
 
 
 charity_project_crud = CRUDCharityProject(CharityProject)
