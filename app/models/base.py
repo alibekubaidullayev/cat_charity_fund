@@ -1,9 +1,8 @@
 from datetime import datetime
-
 from sqlalchemy import Boolean, Column, DateTime, Integer
 
 
-class QRKoTModel:
+class ProjectDonationMixin:
     full_amount = Column(Integer, default=0)
     invested_amount = Column(Integer, default=0)
     fully_invested = Column(Boolean, default=False)

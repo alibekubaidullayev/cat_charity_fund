@@ -1,10 +1,10 @@
-from sqlalchemy import Column, Integer, Text
-
+from sqlalchemy import Column, Integer, Text, ForeignKey
 from app.core.db import Base
+from app.models.user import User
 
-from .base import QRKoTModel
+from .base import ProjectDonationMixin
 
 
-class Donation(Base, QRKoTModel):
-    user_id = Column(Integer)
+class Donation(Base, ProjectDonationMixin):
+    user_id = Column(Integer, ForeignKey(User.id))
     comment = Column(Text)

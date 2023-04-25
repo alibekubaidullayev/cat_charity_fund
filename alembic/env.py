@@ -11,6 +11,7 @@ from alembic import context
 
 from app.core.base import Base
 
+
 load_dotenv(".env")
 
 config = context.config
