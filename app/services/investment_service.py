@@ -52,7 +52,6 @@ async def invest_in_project(project, donation, session: AsyncSession):
             donation.close_date = datetime.now()
 
     if project.invested_amount == project.full_amount:
-        print(type(project))
         project.fully_invested = True
         project.close_date = datetime.now()
 

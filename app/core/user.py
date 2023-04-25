@@ -1,3 +1,4 @@
+import logging
 from typing import Optional, Union
 
 from fastapi import Depends, Request
@@ -47,7 +48,7 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
             raise InvalidPasswordException(reason="Password should not contain e-mail")
 
     async def on_after_register(self, user: User, request: Optional[Request] = None):
-        print(f"Пользователь {user.email} зарегестрирован.")
+        logging.info(f"Пользователь {user.email} зарегестрирован.")
 
 
 async def get_user_manager(user_db=Depends(get_user_db)):

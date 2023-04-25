@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -36,7 +38,8 @@ async def check_update_is_possible(
     charity_project = await charity_project_crud.get(charity_project_id, session)
     if charity_project.fully_invested:
         raise HTTPException(
-            status_code=400, detail="Закрытый проект нельзя редактировать!"
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail="Закрытый проект нельзя редактировать!",
         )
 
     if (
@@ -44,14 +47,17 @@ async def check_update_is_possible(
         charity_project.invested_amount and
         charity_project.invested_amount > new_full_amount
     ):
-        raise HTTPException(status_code=422, detail="Нельзя меньше ставить!")
+        raise HTTPException(
+            status_code=HTTPStatus.UNPROCESSABLE_ENTITY, detail="Нельзя меньше ставить!"
+        )
 
 
 async def check_project_fully_invested(charity_project_id: int, session: AsyncSession):
     charity_project = await charity_project_crud.get(charity_project_id, session)
     if charity_project.fully_invested:
         raise HTTPException(
-            status_code=400, detail="Закрытый проект нельзя редактировать!"
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail="Закрытый проект нельзя редактировать!",
         )
 
 
@@ -60,21 +66,6 @@ async def check_delete_is_possible(charity_project_id: int, session: AsyncSessio
 
     if charity_project.fully_invested or charity_project.invested_amount:
         raise HTTPException(
-            status_code=400,
+            status_code=HTTPStatus.BAD_REQUEST,
             detail="В проект были внесены средства, не подлежит удалению!",
         )
-
-
-async def check_fully_no_less_invested(
-    charity_project_id: int, obj_in, session: AsyncSession
-):
-    new_full_amount = obj_in.dict()["full_amount"]
-
-    charity_project = await charity_project_crud.get(charity_project_id, session)
-
-    if (
-        new_full_amount and
-        charity_project.invested_amount and
-        charity_project.invested_amount > new_full_amount
-    ):
-        raise HTTPException(status_code=422, detail="Нельзя меньше ставить!")
