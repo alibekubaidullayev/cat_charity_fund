@@ -1,5 +1,5 @@
 # Проект "QRKot"
-Проект "QRKot" - спасите бедных котят от судьбы стать шаурмой.
+Проект "QRKot" - спасите бедных котят.
 
 ### Автор:
 - [Alibek Ubaidullayev] (https://github.com/alibekubaidullayev)
